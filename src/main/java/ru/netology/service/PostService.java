@@ -5,41 +5,28 @@ import ru.netology.model.Post;
 import ru.netology.repository.PostRepository;
 
 import java.util.List;
-import java.util.concurrent.ConcurrentMap;
 
 public class PostService {
   private final PostRepository repository;
-  private static long countPostID = 1;
 
   public PostService(PostRepository repository) {
     this.repository = repository;
   }
 
-  public ConcurrentMap<Long, Post> all() {
+  public List<Post> all() {
     return repository.all();
   }
 
   public Post getById(long id) {
-    Post post = null;
-    if (all().containsKey(id)) {
-      post = all().get(id);
-      repository.getById(id);
-    }
-    return post;
+    return repository.getById(id).orElseThrow(NotFoundException::new);
   }
 
-  public synchronized Post save(String content) {
-    Post post = new Post(countPostID, content);
-    return repository.save(countPostID++, post);
+  public Post save(Post post) {
+    return repository.save(post);
   }
 
-  public Post removeById(long id) {
-    Post post = null;
-    if (all().containsKey(id)) {
-      post = all().get(id);
-      repository.removeById(id);
-    }
-    return post;
+  public boolean removeById(long id) {
+    return repository.removeById(id);
   }
 }
 

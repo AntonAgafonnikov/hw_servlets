@@ -19,8 +19,8 @@ public class PostController {
 
   public void all(HttpServletResponse response) throws IOException {
     response.setContentType(APPLICATION_JSON);
-    final var data = service.all();
     final var gson = new Gson();
+    final var data = service.all();
     response.getWriter().print(gson.toJson(data));
   }
 
@@ -39,24 +39,17 @@ public class PostController {
     response.setContentType(APPLICATION_JSON);
     final var gson = new Gson();
     final var post = gson.fromJson(body, Post.class);
-    var id = post.getId();
-    if(service.all().containsKey(id)) {
-      service.all().put(id, post);
-      response.getWriter().print(gson.toJson("Пост успешно отредактирован!"));
-    } else {
-      final var data = service.save(post.getContent());
-      response.getWriter().print(gson.toJson(data));
-    }
+    final var data = service.save(post);
+    response.getWriter().print(gson.toJson(data));
   }
 
   public void removeById(long id, HttpServletResponse response) throws IOException {
     response.setContentType(APPLICATION_JSON);
-    final var data = service.removeById(id);
     final var gson = new Gson();
-    if (data == null) {
-      response.getWriter().print(gson.toJson(ERROR));
+    if (service.removeById(id)) {
+      response.getWriter().print(gson.toJson("Пост удалён!"));
     } else {
-      response.getWriter().print(gson.toJson("Пост успешно удалён!"));
+      response.getWriter().print(gson.toJson("ОШИБКА! Пост c id=" + id + " не найден!"));
     }
   }
 }
